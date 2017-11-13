@@ -12,9 +12,10 @@
 
 module Main where
 
+import Configuration.Database
 import Configuration.Response
 import Control.Monad.IO.Class
-import Control.Monad.Logger (LoggingT, runStdoutLoggingT)
+import Control.Monad.Logger (runStdoutLoggingT)
 import Data.Aeson hiding (json)
 import qualified Data.Text.IO as T
 import Database.Persist hiding (delete, get)
@@ -92,13 +93,3 @@ app = do
             (Just person) -> do
                 newId <- runSQL $ insert person
                 json $ object ["result" .= String "success", "id" .= newId]
-
-connStr :: ConnectionString
-connStr =
-    "host=localhost port=5432 user=postgres dbname=spocktest password=test"
-
-runSQL ::
-       (HasSpock m, SpockConn m ~ SqlBackend)
-    => SqlPersistT (LoggingT IO) a
-    -> m a
-runSQL action = runQuery $ \conn -> runStdoutLoggingT $ runSqlConn action conn
