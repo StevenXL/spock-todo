@@ -25,6 +25,7 @@ import Database.Persist.Postgresql hiding (delete, get)
 import Database.Persist.TH
 import GHC.Generics
 import Network.HTTP.Types
+import Network.Wai.Middleware.Static (addBase, staticPolicy)
 import Web.Spock
 import Web.Spock.Config
 
@@ -60,8 +61,9 @@ main = do
 
 app :: Api
 app = do
+    middleware $ staticPolicy (addBase "front-end/build/")
     get root $ do
-        rootPage <- liftIO $ T.readFile "static/index.html"
+        rootPage <- liftIO $ T.readFile "front-end/build/index.html"
         html rootPage
     get "people" $ do
         allPeople <- runSQL $ selectList [] [Asc PersonId]

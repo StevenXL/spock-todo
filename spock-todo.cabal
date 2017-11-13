@@ -26,3 +26,4 @@ executable spock-todo
                      , persistent-template
                      , persistent-postgresql
                      , http-types
+                     , wai-middleware-static
