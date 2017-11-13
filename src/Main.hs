@@ -15,15 +15,13 @@ module Main where
 import Control.Monad.IO.Class
 import Control.Monad.Logger (LoggingT, runStdoutLoggingT)
 import Data.Aeson hiding (json)
-import Data.Monoid ((<>))
-import Data.Text (Text, pack)
+import Data.Text (Text)
 import Data.Text.Encoding (decodeUtf8)
 import qualified Data.Text.IO as T
 import Database.Persist hiding (delete, get) -- To avoid a naming clash with Web.Spock.get
 import qualified Database.Persist as P -- We'll be using P.get later for GET /people/<id>.
 import Database.Persist.Postgresql hiding (delete, get)
-import Database.Persist.TH
-import GHC.Generics
+import Model.CoreTypes
 import Network.HTTP.Types
 import Network.Wai.Middleware.Static (addBase, staticPolicy)
 import Web.Spock
@@ -41,15 +39,6 @@ import Web.Spock.Config
 type Api = SpockM SqlBackend () () ()
 
 type ApiAction a = SpockAction SqlBackend () () a
-
-share
-    [mkPersist sqlSettings, mkMigrate "migrateAll"]
-    [persistLowerCase|
-Person json -- The json keyword will make Persistent generate sensible ToJSON and FromJSON instances for us.
-  name Text
-  age Int
-  deriving Show
-|]
 
 main :: IO ()
 main = do
