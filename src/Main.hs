@@ -12,11 +12,13 @@
 
 module Main where
 
+import Control.Monad.IO.Class
 import Control.Monad.Logger (LoggingT, runStdoutLoggingT)
 import Data.Aeson hiding (json)
 import Data.Monoid ((<>))
 import Data.Text (Text, pack)
 import Data.Text.Encoding (decodeUtf8)
+import qualified Data.Text.IO as T
 import Database.Persist hiding (delete, get) -- To avoid a naming clash with Web.Spock.get
 import qualified Database.Persist as P -- We'll be using P.get later for GET /people/<id>.
 import Database.Persist.Postgresql hiding (delete, get)
@@ -58,6 +60,9 @@ main = do
 
 app :: Api
 app = do
+    get root $ do
+        rootPage <- liftIO $ T.readFile "static/index.html"
+        html rootPage
     get "people" $ do
         allPeople <- runSQL $ selectList [] [Asc PersonId]
         json allPeople
