@@ -12,13 +12,12 @@
 
 module Main where
 
+import Configuration.Response
 import Control.Monad.IO.Class
 import Control.Monad.Logger (LoggingT, runStdoutLoggingT)
 import Data.Aeson hiding (json)
-import Data.Text (Text)
-import Data.Text.Encoding (decodeUtf8)
 import qualified Data.Text.IO as T
-import Database.Persist hiding (delete, get) -- To avoid a naming clash with Web.Spock.get
+import Database.Persist hiding (delete, get)
 import qualified Database.Persist as P -- We'll be using P.get later for GET /people/<id>.
 import Database.Persist.Postgresql hiding (delete, get)
 import Model.CoreTypes
@@ -37,8 +36,6 @@ import Web.Spock.Config
 -- Look into default-extions in cabal file
 -- jsonBody != jsonBody'
 type Api = SpockM SqlBackend () () ()
-
-type ApiAction a = SpockAction SqlBackend () () a
 
 main :: IO ()
 main = do
@@ -105,15 +102,3 @@ runSQL ::
     => SqlPersistT (LoggingT IO) a
     -> m a
 runSQL action = runQuery $ \conn -> runStdoutLoggingT $ runSqlConn action conn
-
-errorJson :: Int -> Text -> ApiAction ()
-errorJson code message =
-    json $
-    object
-        [ "result" .= String "failure"
-        , "error" .= object ["code" .= code, "message" .= message]
-        ]
-
-customErrorHandler (Status statusCode statusMsg) =
-    json $
-    object ["status" .= statusCode, "message" .= String (decodeUtf8 statusMsg)]
