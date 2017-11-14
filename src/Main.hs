@@ -18,6 +18,7 @@ import Configuration.Response
 import Control.Monad.IO.Class
 import Control.Monad.Logger (runStdoutLoggingT)
 import Data.Aeson hiding (json)
+import Data.Maybe (fromMaybe)
 import qualified Data.Text.IO as T
 import Database.Persist hiding (delete, get)
 import qualified Database.Persist as P -- We'll be using P.get later for GET /people/<id>.
@@ -61,10 +62,7 @@ app = do
         case maybePerson of
             Nothing -> do
                 setStatus status404
-                let errorCode = mkErrorCode 1
-                case errorCode of
-                    Nothing -> errorJson unknownError
-                    Just errCode -> errorJson errCode
+                errorJson $ fromMaybe unknownError (mkErrorCode 2)
             Just thePerson -> json thePerson
     put ("people" <//> var) $ \personId -> do
         mExistingPerson <- runSQL $ P.get personId :: ApiAction (Maybe Person)
@@ -72,16 +70,10 @@ app = do
         case (mExistingPerson, mReqBody) of
             (Nothing, _) -> do
                 setStatus status404
-                let errorCode = mkErrorCode 1
-                case errorCode of
-                    Nothing -> errorJson unknownError
-                    Just errCode -> errorJson errCode
+                errorJson $ fromMaybe unknownError (mkErrorCode 2)
             (_, Nothing) -> do
                 setStatus status406
-                let errorCode = mkErrorCode 1
-                case errorCode of
-                    Nothing -> errorJson unknownError
-                    Just errCode -> errorJson errCode
+                errorJson $ fromMaybe unknownError (mkErrorCode 1)
             (Just _, Just reqBody) -> do
                 runSQL $ P.replace personId reqBody
                 setStatus status201
@@ -99,10 +91,7 @@ app = do
         case maybePerson of
             Nothing -> do
                 setStatus status406
-                let errorCode = mkErrorCode 1
-                case errorCode of
-                    Nothing -> errorJson unknownError
-                    Just errCode -> errorJson errCode
+                errorJson $ fromMaybe unknownError (mkErrorCode 2)
             (Just person) -> do
                 newId <- runSQL $ insert person
                 json $ object ["result" .= String "success", "id" .= newId]
