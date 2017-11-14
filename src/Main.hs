@@ -13,6 +13,7 @@
 module Main where
 
 import Configuration.Database
+import Configuration.ErrorCode (mkErrorCode, unknownError)
 import Configuration.Response
 import Control.Monad.IO.Class
 import Control.Monad.Logger (runStdoutLoggingT)
@@ -60,7 +61,10 @@ app = do
         case maybePerson of
             Nothing -> do
                 setStatus status404
-                errorJson 2 "Could not find a person with a matching id"
+                let errorCode = mkErrorCode 1
+                case errorCode of
+                    Nothing -> errorJson unknownError
+                    Just errCode -> errorJson errCode
             Just thePerson -> json thePerson
     put ("people" <//> var) $ \personId -> do
         mExistingPerson <- runSQL $ P.get personId :: ApiAction (Maybe Person)
@@ -68,10 +72,16 @@ app = do
         case (mExistingPerson, mReqBody) of
             (Nothing, _) -> do
                 setStatus status404
-                errorJson 1 "Could not find a person with a matching id"
+                let errorCode = mkErrorCode 1
+                case errorCode of
+                    Nothing -> errorJson unknownError
+                    Just errCode -> errorJson errCode
             (_, Nothing) -> do
                 setStatus status406
-                errorJson 1 "Failed to parse request body as person"
+                let errorCode = mkErrorCode 1
+                case errorCode of
+                    Nothing -> errorJson unknownError
+                    Just errCode -> errorJson errCode
             (Just _, Just reqBody) -> do
                 runSQL $ P.replace personId reqBody
                 setStatus status201
@@ -89,7 +99,10 @@ app = do
         case maybePerson of
             Nothing -> do
                 setStatus status406
-                errorJson 1 "Failed to parse request body as person"
+                let errorCode = mkErrorCode 1
+                case errorCode of
+                    Nothing -> errorJson unknownError
+                    Just errCode -> errorJson errCode
             (Just person) -> do
                 newId <- runSQL $ insert person
                 json $ object ["result" .= String "success", "id" .= newId]

@@ -1,7 +1,8 @@
 module Configuration.Response where
 
+import Configuration.ErrorCode
+       (ErrorCode, errorCodeToCode, errorCodeToMsg)
 import Data.Aeson (Value(String), (.=), object)
-import Data.Text (Text)
 import Data.Text.Encoding (decodeUtf8)
 import Database.Persist.Sql (SqlBackend)
 import Network.HTTP.Types (Status(Status))
@@ -9,12 +10,16 @@ import Web.Spock (ActionCtxT, SpockAction, json)
 
 type ApiAction a = SpockAction SqlBackend () () a
 
-errorJson :: Int -> Text -> ApiAction ()
-errorJson code message =
+errorJson :: ErrorCode -> ApiAction ()
+errorJson errorCode =
     json $
     object
         [ "result" .= String "failure"
-        , "error" .= object ["code" .= code, "message" .= message]
+        , "error" .=
+          object
+              [ "code" .= (errorCodeToCode errorCode)
+              , "message" .= (errorCodeToMsg errorCode)
+              ]
         ]
 
 customErrorHandler :: Status -> ActionCtxT () IO ()
