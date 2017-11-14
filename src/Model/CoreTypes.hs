@@ -10,7 +10,7 @@
 
 module Model.CoreTypes where
 
-import Data.Text (Text, pack)
+import Data.Text (Text)
 import Database.Persist.TH
 
 share

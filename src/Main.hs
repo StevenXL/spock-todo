@@ -73,7 +73,7 @@ app = do
                 setStatus status406
                 errorJson 1 "Failed to parse request body as person"
             (Just _, Just reqBody) -> do
-                person <- runSQL $ P.replace personId reqBody
+                runSQL $ P.replace personId reqBody
                 setStatus status201
                 json $ object ["result" .= String "success", "id" .= personId]
     delete ("people" <//> var) $ \personId -> do
