@@ -3,19 +3,27 @@
 
 module Web.Actions.People where
 
-import Control.Monad.IO.Class (MonadIO)
-import Database.Persist (SelectOpt(Asc), selectList)
-import Database.Persist.Sql (SqlBackend)
+import Data.Maybe (fromMaybe)
+import Database.Persist (Entity, SelectOpt(Asc), get, selectList)
 import Model.CoreTypes
+import Network.HTTP.Types (status404)
 import Web.Configuration.Database (runSQL)
-import Web.Spock (ActionCtxT, HasSpock, SpockConn, json)
+import Web.Configuration.ErrorCode (mkErrorCode, unknownError)
+import Web.Configuration.Response (ApiAction, errorJson)
+import Web.Spock (json, setStatus)
 
-getPeople ::
-       ( MonadIO m
-       , HasSpock (ActionCtxT ctx m)
-       , SpockConn (ActionCtxT ctx m) ~ SqlBackend
-       )
-    => ActionCtxT ctx m b
+getPeople :: ApiAction ()
 getPeople = do
-    allPeople <- runSQL $ selectList [] [Asc PersonId]
+    allPeople <-
+        runSQL $ selectList [] [Asc PersonId] :: ApiAction [Entity Person]
     json allPeople
+
+getPerson :: PersonId -> ApiAction ()
+getPerson =
+    \personId -> do
+        mPerson <- runSQL $ get personId :: ApiAction (Maybe Person)
+        case mPerson of
+            Nothing -> do
+                setStatus status404
+                errorJson $ fromMaybe unknownError (mkErrorCode 2)
+            Just thePerson -> json thePerson

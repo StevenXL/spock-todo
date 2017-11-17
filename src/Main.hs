@@ -43,13 +43,7 @@ app = do
     middleware $ staticPolicy (addBase "front-end/build/")
     get root $ do file "Text" "front-end/build/index.html"
     get "people" People.getPeople
-    get ("people" <//> var) $ \personId -> do
-        mPerson <- runSQL $ P.get personId :: ApiAction (Maybe Person)
-        case mPerson of
-            Nothing -> do
-                setStatus status404
-                errorJson $ fromMaybe unknownError (mkErrorCode 2)
-            Just thePerson -> json thePerson
+    get ("people" <//> var) People.getPerson
     put ("people" <//> var) $ \personId -> do
         mExistingPerson <- runSQL $ P.get personId :: ApiAction (Maybe Person)
         mReqBody <- jsonBody :: ApiAction (Maybe Person)
