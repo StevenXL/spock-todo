@@ -13,17 +13,11 @@
 module Main where
 
 import Control.Monad.Logger (runStdoutLoggingT)
-import Data.Aeson hiding (json)
-import Data.Maybe (fromMaybe)
-import Database.Persist hiding (delete, get)
-import qualified Database.Persist as P
 import Database.Persist.Postgresql hiding (delete, get)
 import Model.CoreTypes
-import Network.HTTP.Types
 import Network.Wai.Middleware.Static (addBase, staticPolicy)
 import qualified Web.Actions.People as People
 import Web.Configuration.Database
-import Web.Configuration.ErrorCode (mkErrorCode, unknownError)
 import Web.Configuration.Response
 import Web.Spock
 import Web.Spock.Config
@@ -41,37 +35,9 @@ main = do
 app :: Api
 app = do
     middleware $ staticPolicy (addBase "front-end/build/")
-    get root $ do file "Text" "front-end/build/index.html"
-    get "people" People.getPeople
-    get ("people" <//> var) People.getPerson
-    put ("people" <//> var) $ \personId -> do
-        mExistingPerson <- runSQL $ P.get personId :: ApiAction (Maybe Person)
-        mReqBody <- jsonBody :: ApiAction (Maybe Person)
-        case (mExistingPerson, mReqBody) of
-            (Nothing, _) -> do
-                setStatus status404
-                errorJson $ fromMaybe unknownError (mkErrorCode 2)
-            (_, Nothing) -> do
-                setStatus status406
-                errorJson $ fromMaybe unknownError (mkErrorCode 1)
-            (Just _, Just reqBody) -> do
-                runSQL $ P.replace personId reqBody
-                setStatus status201
-                json $ object ["result" .= String "success", "id" .= personId]
-    delete ("people" <//> var) $ \personId -> do
-        mExistingPerson <- runSQL $ P.get personId :: ApiAction (Maybe Person)
-        case mExistingPerson of
-            Nothing -> do
-                setStatus status404
-            Just _ -> do
-                runSQL $ P.delete (personId :: Key Person)
-                json $ object ["result" .= String "success"]
-    post "people" $ do
-        mPerson <- jsonBody :: ApiAction (Maybe Person)
-        case mPerson of
-            Nothing -> do
-                setStatus status406
-                errorJson $ fromMaybe unknownError (mkErrorCode 2)
-            (Just person) -> do
-                newId <- runSQL $ insert person
-                json $ object ["result" .= String "success", "id" .= newId]
+    get root $ file "Text" "front-end/build/index.html"
+    get "people" People.index
+    get ("people" <//> var) People.show
+    put ("people" <//> var) People.update
+    delete ("people" <//> var) People.destroy
+    post "people" People.create
