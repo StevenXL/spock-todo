@@ -14,15 +14,13 @@ module Main where
 
 import Control.Monad.Logger (runStdoutLoggingT)
 import Database.Persist.Postgresql hiding (delete, get)
-import Model.CoreTypes
+import Model.CoreTypes (migrateAll)
 import Network.Wai.Middleware.Static (addBase, staticPolicy)
-import qualified Web.Actions.People as People
-import Web.Configuration.Database
-import Web.Configuration.Response
-import Web.Spock
+import Web.Configuration.Database (connStr)
+import Web.Configuration.Response (Api, customErrorHandler)
+import qualified Web.Resources.People as People
+import Web.Spock (file, get, middleware, root, runSpock, spock)
 import Web.Spock.Config
-
-type Api = SpockM SqlBackend () () ()
 
 main :: IO ()
 main = do
@@ -35,9 +33,5 @@ main = do
 app :: Api
 app = do
     middleware $ staticPolicy (addBase "front-end/build/")
-    get root $ file "Text" "front-end/build/index.html"
-    get "people" People.index
-    get ("people" <//> var) People.show
-    put ("people" <//> var) People.update
-    delete ("people" <//> var) People.destroy
-    post "people" People.create
+    get root $ file "index.html" "front-end/build/index.html"
+    People.resources

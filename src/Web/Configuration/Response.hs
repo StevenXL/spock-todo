@@ -6,7 +6,9 @@ import Database.Persist.Sql (SqlBackend)
 import Network.HTTP.Types (Status(Status))
 import Web.Configuration.ErrorCode
        (ErrorCode, errorCodeToCode, errorCodeToMsg)
-import Web.Spock (ActionCtxT, SpockAction, json)
+import Web.Spock (ActionCtxT, SpockAction, SpockM, json)
+
+type Api = SpockM SqlBackend () () ()
 
 type ApiAction a = SpockAction SqlBackend () () a
 
