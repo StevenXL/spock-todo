@@ -12,19 +12,18 @@
 
 module Main where
 
-import Configuration.Database
-import Configuration.ErrorCode (mkErrorCode, unknownError)
-import Configuration.Response
-
 import Control.Monad.Logger (runStdoutLoggingT)
 import Data.Aeson hiding (json)
 import Data.Maybe (fromMaybe)
 import Database.Persist hiding (delete, get)
-import qualified Database.Persist as P -- We'll be using P.get later for GET /people/<id>.
+import qualified Database.Persist as P
 import Database.Persist.Postgresql hiding (delete, get)
 import Model.CoreTypes
 import Network.HTTP.Types
 import Network.Wai.Middleware.Static (addBase, staticPolicy)
+import Web.Configuration.Database
+import Web.Configuration.ErrorCode (mkErrorCode, unknownError)
+import Web.Configuration.Response
 import Web.Spock
 import Web.Spock.Config
 
@@ -42,8 +41,6 @@ app :: Api
 app = do
     middleware $ staticPolicy (addBase "front-end/build/")
     get root $ do file "Text" "front-end/build/index.html"
-        -- rootPage <- liftIO $ T.readFile "front-end/build/index.html"
-        -- html rootPage
     get "people" $ do
         allPeople <- runSQL $ selectList [] [Asc PersonId]
         json allPeople

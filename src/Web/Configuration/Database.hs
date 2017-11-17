@@ -1,6 +1,6 @@
 {-# LANGUAGE GADTs #-}
 
-module Configuration.Database where
+module Web.Configuration.Database where
 
 import Control.Monad.Logger (LoggingT, runStdoutLoggingT)
 import Database.Persist.Postgresql (ConnectionString, runSqlConn)

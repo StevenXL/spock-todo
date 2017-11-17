@@ -1,4 +1,4 @@
-module Configuration.ErrorCode
+module Web.Configuration.ErrorCode
     ( ErrorCode
     , mkErrorCode
     , errorCodeToCode

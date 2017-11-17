@@ -1,11 +1,11 @@
-module Configuration.Response where
+module Web.Configuration.Response where
 
-import Configuration.ErrorCode
-       (ErrorCode, errorCodeToCode, errorCodeToMsg)
 import Data.Aeson (Value(String), (.=), object)
 import Data.Text.Encoding (decodeUtf8)
 import Database.Persist.Sql (SqlBackend)
 import Network.HTTP.Types (Status(Status))
+import Web.Configuration.ErrorCode
+       (ErrorCode, errorCodeToCode, errorCodeToMsg)
 import Web.Spock (ActionCtxT, SpockAction, json)
 
 type ApiAction a = SpockAction SqlBackend () () a
