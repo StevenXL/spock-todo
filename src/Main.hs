@@ -21,6 +21,7 @@ import Database.Persist.Postgresql hiding (delete, get)
 import Model.CoreTypes
 import Network.HTTP.Types
 import Network.Wai.Middleware.Static (addBase, staticPolicy)
+import qualified Web.Actions.People as People
 import Web.Configuration.Database
 import Web.Configuration.ErrorCode (mkErrorCode, unknownError)
 import Web.Configuration.Response
@@ -41,9 +42,7 @@ app :: Api
 app = do
     middleware $ staticPolicy (addBase "front-end/build/")
     get root $ do file "Text" "front-end/build/index.html"
-    get "people" $ do
-        allPeople <- runSQL $ selectList [] [Asc PersonId]
-        json allPeople
+    get "people" People.getPeople
     get ("people" <//> var) $ \personId -> do
         mPerson <- runSQL $ P.get personId :: ApiAction (Maybe Person)
         case mPerson of
