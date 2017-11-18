@@ -19,5 +19,7 @@ share
 Person json
   name Text
   age Int
+  email Text sqltype=citext
+  UniquePersonEmail email
   deriving Show
 |]
