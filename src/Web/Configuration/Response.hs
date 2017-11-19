@@ -10,7 +10,7 @@ import Web.Spock (ActionCtxT, SpockAction, SpockM, json)
 
 type Api = SpockM SqlBackend () () ()
 
-type ApiAction a = SpockAction SqlBackend () () a
+type ApiAction = SpockAction SqlBackend () ()
 
 errorJson :: ErrorCode -> ApiAction ()
 errorJson errorCode =

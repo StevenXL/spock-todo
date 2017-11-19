@@ -27,3 +27,5 @@ executable spock-todo
                      , persistent-postgresql
                      , http-types
                      , wai-middleware-static
+                     , digestive-functors
+                     , digestive-functors-aeson
