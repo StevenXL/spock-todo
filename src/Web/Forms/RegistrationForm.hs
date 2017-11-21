@@ -7,9 +7,9 @@ import Control.Monad ((>=>))
 import Data.Aeson (FromJSON, ToJSON)
 import Data.String (IsString)
 import Data.Text (Text, null, unpack)
-import Database.Persist (Entity, getBy)
+import Database.Persist (getBy)
 import GHC.Generics (Generic)
-import Model.CoreTypes (Person, Unique(UniquePersonEmail))
+import Model.CoreTypes (Unique(UniquePersonEmail))
 import Text.Digestive
        (Form, Result(Error, Success), (.:), check, text, validate,
         validateM)
@@ -42,8 +42,7 @@ registerForm =
 
 getPersonByEmail :: Text -> ApiAction (Result Text Text)
 getPersonByEmail email' = do
-    mPerson :: Maybe (Entity Person) <-
-        runSQL $ getBy (UniquePersonEmail email')
+    mPerson <- runSQL $ getBy (UniquePersonEmail email')
     case mPerson of
         Nothing -> return $ Success email'
         Just _ -> return $ Error "Email is not available"
