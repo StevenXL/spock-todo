@@ -123,18 +123,22 @@ getPersonByEmail email' = do
     mPerson :: Maybe (Entity Person) <-
         runSQL $ getBy (UniquePersonEmail email')
     case mPerson of
-        Nothing -> return $ Success "Email is available"
+        Nothing -> return $ Success email'
         Just _ -> return $ Error "Email is not available"
 
 notEmpty :: IsString v => Text -> Result v Text
 notEmpty input =
     if (not $ Data.Text.null input)
-        then Success "Valid Integer"
+        then Success input
         else Error "Cannot be empty"
 
 integer :: Text -> Result Text Int
 integer input =
-    maybe (Error "Unable to parse int") Success (readMaybe $ unpack input)
+    maybe (Error "Unable to parse int") Success (textToMaybeInt input)
+  where
+    textToMaybeInt :: Text -> Maybe Int
+    textToMaybeInt text' =
+        fmap round (readMaybe . unpack $ text' :: Maybe Double)
 
 greaterThan :: (Num a, Ord a, Show a) => a -> a -> Result Text a
 greaterThan base other =
