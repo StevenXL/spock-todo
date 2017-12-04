@@ -12,6 +12,7 @@ module Model.CoreTypes where
 
 import Data.Text (Text)
 import Database.Persist.TH
+import Model.Email (Email)
 
 share
     [mkPersist sqlSettings, mkMigrate "migrateAll"]
@@ -19,7 +20,7 @@ share
 Person json
   name Text
   age Int
-  email Text sqltype=citext
+  email Email sqltype=citext
   UniquePersonEmail email
   deriving Show
 |]

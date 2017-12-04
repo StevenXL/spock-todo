@@ -11,6 +11,7 @@ import Data.Maybe (fromMaybe)
 import Database.Persist
        (Entity, SelectOpt(Asc), delete, get, insert, replace, selectList)
 import Model.CoreTypes
+import qualified Model.Email as Email
 import Network.HTTP.Types
        (status201, status400, status404, status406)
 import Text.Digestive.Aeson (digestJSON, jsonErrors)
@@ -80,6 +81,7 @@ create = do
                     json $ jsonErrors view
                 Just RegistrationRequest {..} -> do
                     setStatus status201
-                    personId <- runSQL $ insert (Person name age email)
+                    personId <-
+                        runSQL $ insert (Person name age (Email.mk email))
                     json $
                         object ["result" .= String "success", "id" .= personId]

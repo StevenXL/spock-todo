@@ -29,3 +29,4 @@ executable spock-todo
                      , wai-middleware-static
                      , digestive-functors
                      , digestive-functors-aeson
+                     , case-insensitive

@@ -10,6 +10,7 @@ import Data.Text (Text, null, unpack)
 import Database.Persist (getBy)
 import GHC.Generics (Generic)
 import Model.CoreTypes (Unique(UniquePersonEmail))
+import qualified Model.Email as Email
 import Text.Digestive
        (Form, Result(Error, Success), (.:), check, text, validate,
         validateM)
@@ -42,7 +43,7 @@ registerForm =
 
 getPersonByEmail :: Text -> ApiAction (Result Text Text)
 getPersonByEmail email' = do
-    mPerson <- runSQL $ getBy (UniquePersonEmail email')
+    mPerson <- runSQL $ getBy (UniquePersonEmail $ Email.mk email')
     case mPerson of
         Nothing -> return $ Success email'
         Just _ -> return $ Error "Email is not available"
