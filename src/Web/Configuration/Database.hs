@@ -1,5 +1,3 @@
-{-# LANGUAGE GADTs #-}
-
 module Web.Configuration.Database where
 
 import Control.Monad.Logger (LoggingT, runStdoutLoggingT)

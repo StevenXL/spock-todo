@@ -1,6 +1,3 @@
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-
 module Web.Forms.RegistrationForm where
 
 import Control.Monad ((>=>))
