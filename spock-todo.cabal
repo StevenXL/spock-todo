@@ -15,6 +15,26 @@ extra-source-files:  README.md
 
 executable spock-todo
   hs-source-dirs:      src
+  other-modules:       Model.CoreTypes
+                     , Model.Email
+                     , Web.Actions.People
+                     , Web.Configuration.Database
+                     , Web.Configuration.ErrorCode
+                     , Web.Configuration.Response
+                     , Web.Forms.RegistrationForm
+                     , Web.Resources.People
+  default-extensions:  OverloadedStrings
+                     , FlexibleContexts
+                     , FlexibleInstances
+                     , GeneralizedNewtypeDeriving
+                     , TypeSynonymInstances
+                     , MultiParamTypeClasses
+                     , FunctionalDependencies
+                     , NoMonomorphismRestriction
+                     , GADTs
+                     , BangPatterns
+                     , DeriveGeneric
+                     , ScopedTypeVariables
   main-is:             Main.hs
   default-language:    Haskell2010
   build-depends:       base >= 4.7 && < 5
