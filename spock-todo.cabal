@@ -14,7 +14,7 @@ cabal-version:       >=1.10
 extra-source-files:  README.md
 
 executable spock-todo
-  hs-source-dirs:      src
+  hs-source-dirs:      app
   other-modules:       Model.CoreTypes
                      , Model.Email
                      , Web.Actions.People
