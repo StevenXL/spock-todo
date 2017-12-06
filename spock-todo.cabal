@@ -13,8 +13,9 @@ build-type:          Simple
 cabal-version:       >=1.10
 extra-source-files:  README.md
 
-executable spock-todo
+executable spock-todo-exe
   hs-source-dirs:      app
+  ghc-options:         -Wall -Werror -fwarn-unused-binds  -fwarn-unused-imports
   other-modules:       Model.CoreTypes
                      , Web.Actions.People
                      , Web.Configuration.Database
@@ -37,6 +38,7 @@ executable spock-todo
   main-is:             Main.hs
   default-language:    Haskell2010
   build-depends:       base >= 4.7 && < 5
+                     , spock-todo
                      , Spock
                      , aeson
                      , case-insensitive
@@ -51,10 +53,11 @@ executable spock-todo
                      , wai-middleware-static
 
 library
-    default-language:  Haskell2010
-    exposed-modules:   Email
-    hs-source-dirs:    src
-    build-depends:     base >= 4.9 && < 5.0
+  default-language:    Haskell2010
+  exposed-modules:     Email
+  ghc-options:         -Wall -Werror -fwarn-unused-binds -fwarn-unused-imports
+  hs-source-dirs:      src
+  build-depends:       base >= 4.9 && < 5.0
                      , aeson
                      , case-insensitive
                      , persistent
@@ -71,3 +74,31 @@ library
                      , OverloadedStrings
                      , ScopedTypeVariables
                      , TypeSynonymInstances
+
+test-suite spec
+  type:                exitcode-stdio-1.0
+  default-language:    Haskell2010
+  other-modules:       EmailSpec
+  hs-source-dirs:      test
+  main-is:             Spec.hs
+  ghc-options:         -Wall -Werror -fwarn-unused-binds -fwarn-unused-imports
+  default-extensions:  BangPatterns
+                     , DeriveGeneric
+                     , FlexibleContexts
+                     , FlexibleInstances
+                     , FunctionalDependencies
+                     , GADTs
+                     , GeneralizedNewtypeDeriving
+                     , MultiParamTypeClasses
+                     , NoMonomorphismRestriction
+                     , OverloadedStrings
+                     , ScopedTypeVariables
+                     , TypeSynonymInstances
+  build-depends:       base >= 4.7 && < 5
+                     , QuickCheck
+                     , aeson
+                     , case-insensitive
+                     , hspec
+                     , persistent
+                     , spock-todo
+                     , text

@@ -1,7 +1,7 @@
 module Email where
 
-import Data.Aeson
-       (FromJSON(..), ToJSON(..), Value(..), (.:), withObject)
+import Data.Aeson (FromJSON(..), ToJSON(..), Value(..))
+import Data.Aeson.Types (typeMismatch)
 import Data.CaseInsensitive (CI, original)
 import qualified Data.CaseInsensitive as CI
 import Data.Text (Text)
@@ -10,14 +10,14 @@ import Database.Persist (PersistField(..), PersistValue(..))
 
 newtype Email =
     Email (CI Text)
-    deriving (Show)
+    deriving (Show, Eq, Ord)
 
 mk :: Text -> Email
 mk = Email . CI.mk
 
 instance FromJSON Email where
-    parseJSON =
-        withObject "Email" $ \o -> o .: "email" >>= return . Email . CI.mk
+    parseJSON (String text) = pure $ mk text
+    parseJSON invalid = typeMismatch "Email" invalid
 
 instance ToJSON Email where
     toJSON (Email ciText) = String . original $ ciText
