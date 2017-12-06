@@ -1,4 +1,4 @@
-module Model.Email where
+module Email where
 
 import Data.Aeson
        (FromJSON(..), ToJSON(..), Value(..), (.:), withObject)

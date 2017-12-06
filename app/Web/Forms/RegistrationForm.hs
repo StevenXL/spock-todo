@@ -5,9 +5,9 @@ import Data.Aeson (FromJSON, ToJSON)
 import Data.String (IsString)
 import Data.Text (Text, null, unpack)
 import Database.Persist (getBy)
+import qualified Email
 import GHC.Generics (Generic)
 import Model.CoreTypes (Unique(UniquePersonEmail))
-import qualified Model.Email as Email
 import Text.Digestive
        (Form, Result(Error, Success), (.:), check, text, validate,
         validateM)

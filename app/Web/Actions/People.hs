@@ -6,8 +6,8 @@ import Data.Aeson (Value(String), (.=), object, toJSON)
 import Data.Maybe (fromMaybe)
 import Database.Persist
        (Entity, SelectOpt(Asc), delete, get, insert, replace, selectList)
+import qualified Email
 import Model.CoreTypes
-import qualified Model.Email as Email
 import Network.HTTP.Types
        (status201, status400, status404, status406)
 import Text.Digestive.Aeson (digestJSON, jsonErrors)
