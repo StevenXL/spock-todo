@@ -58,6 +58,7 @@ library
   ghc-options:         -Wall -Werror -fwarn-unused-binds -fwarn-unused-imports
   hs-source-dirs:      src
   build-depends:       base >= 4.9 && < 5.0
+                     , QuickCheck
                      , aeson
                      , case-insensitive
                      , persistent

@@ -4,9 +4,10 @@ import Data.Aeson (FromJSON(..), ToJSON(..), Value(..))
 import Data.Aeson.Types (typeMismatch)
 import Data.CaseInsensitive (CI, original)
 import qualified Data.CaseInsensitive as CI
-import Data.Text (Text)
+import Data.Text (Text, pack)
 import Data.Text.Encoding (decodeUtf8)
 import Database.Persist (PersistField(..), PersistValue(..))
+import Test.QuickCheck (Arbitrary(..))
 
 newtype Email =
     Email (CI Text)
@@ -27,3 +28,6 @@ instance PersistField Email where
     fromPersistValue (PersistDbSpecific bytestring) =
         Right . Email . CI.mk $ decodeUtf8 bytestring
     fromPersistValue _ = Left "HALP!"
+
+instance Arbitrary Email where
+    arbitrary = arbitrary >>= return . mk . pack
